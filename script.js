@@ -15,6 +15,7 @@ const map = [
 ]
 
 function createMaze() {
+   console.log("Recreating Maze")
    for (let i = 0; i < map.length; i++) {
       let row = document.createElement('div');
       row.className = 'row';
