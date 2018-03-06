@@ -1,0 +1,25 @@
+.container {display: flex;}
+.row {
+  flex-direction: row;
+  display: flex;
+}
+.wall {background-color: blue;}
+.mazeBlock {
+  width: 35px;
+  height: 35px;
+}
+.start {background-color: green;}
+.finish {background-color: red;}
+.cursor {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: black;
+}
+.box {
+   background-color: brown;
+   width: 33px;
+   height: 33px;
+   border: 1px solid black;
+}
+.empty {background-color: yellow;}
