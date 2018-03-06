@@ -2,7 +2,6 @@ let currentPos = [2,2];
 let newPosition;
 const mazeContainer = document.getElementById('container');
 
-
 const map = [
   "  WWWWW ",
   "WWW   W ",
@@ -32,16 +31,6 @@ function createMaze() {
             cell.className = 'mazeBlock';
             cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
-         } else if (map[i][j] === 'S') {
-            let cell = document.createElement("div");
-            cell.className = 'start mazeBlock';
-            cell.id = String(i) + 'c' + String(j);
-            row.appendChild(cell);
-
-            // Appending the starting cursor to the starting div
-            let cursor = document.createElement('div');
-            cursor.className = 'cursor';
-            cell.appendChild(cursor);
          } else if (map[i][j] === 'B') {
             let cell = document.createElement("div");
             cell.className = 'box mazeBlock';
@@ -58,28 +47,15 @@ function createMaze() {
             cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
          }
+
+         if (i === currentPos[0] && j === currentPos[1]) {
+            let elementToAppendTo = document.getElementById(String(i) + 'c' + String(j))
+            let cursor = document.createElement('div');
+            cursor.className = 'cursor';
+            elementToAppendTo.appendChild(cursor);
+         }
       }
    }
-}
-
-function moveCursor() {
-
-   // take class cursor away from current div
-   let neededId = String(currentPos[0]) + 'c' + String(currentPos[1])
-
-   var toCancelClass = document.getElementById(neededId);
-   toCancelClass.removeChild(toCancelClass.childNodes[0]);
-
-   // move class cursor to new div
-   neededId = String(newPosition[0]) + 'c' + String(newPosition[1])
-   const moveCursorTo = document.getElementById(neededId);
-   let newCursor = document.createElement("div");
-   newCursor.className = 'cursor';
-   moveCursorTo.appendChild(newCursor);
-
-   currentPos = newPosition;
-
-   return true;
 }
 
 function moveBox(positionToMoveTo) {
@@ -89,17 +65,28 @@ function moveBox(positionToMoveTo) {
    // Move it one div the appropriate way
    switch (positionToMoveTo) {
       case 'right':
-         console.log('right')
 
          let colToMoveBoxTo = newPosition[1] + 1
-         console.log(colToMoveBoxTo);
 
          if (map[newPosition[0]][colToMoveBoxTo] === 'W' || map[newPosition[0]][colToMoveBoxTo] === 'B') {
             alert('Preventing Move')
             break;
          } else {
-            console.log('Can Move');
-            moveCursor();
+
+            // Break proper row string into list
+            let rowArray = map[newPosition[0]].split("");
+            rowArray[newPosition[1]] = ' ';
+            rowArray[newPosition[1]+1] = 'B';
+
+            // Revert array back into String
+            let newString = rowArray.join("");
+            // Place that string back into map
+            map[newPosition[0]] = newString;
+
+            document.getElementById('container').innerHTML = ''
+
+            createMaze();
+
          }
 
    }
@@ -127,12 +114,14 @@ function checkRight() {
    newPosition = [currentPos[0], columnToMoveTo];
 
    let itemInNextSpot = map[currentPos[0]][columnToMoveTo]
+   console.log(itemInNextSpot);
 
    switch (itemInNextSpot) {
       case 'W':
-         return false;
+         break;
       case 'B':
          moveBox('right');
+         break;
       default:
          moveCursor();
    }
