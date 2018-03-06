@@ -2,6 +2,7 @@ let currentPos = [2,2];
 let newPosition;
 const mazeContainer = document.getElementById('container');
 
+
 const map = [
   "  WWWWW ",
   "WWW   W ",
@@ -15,7 +16,6 @@ const map = [
 ]
 
 function createMaze() {
-   console.log("Recreating Maze")
    for (let i = 0; i < map.length; i++) {
       let row = document.createElement('div');
       row.className = 'row';
@@ -57,6 +57,26 @@ function createMaze() {
          }
       }
    }
+}
+
+function moveCursor() {
+
+   // take class cursor away from current div
+   let neededId = String(currentPos[0]) + 'c' + String(currentPos[1])
+
+   var toCancelClass = document.getElementById(neededId);
+   toCancelClass.removeChild(toCancelClass.childNodes[0]);
+
+   // move class cursor to new div
+   neededId = String(newPosition[0]) + 'c' + String(newPosition[1])
+   const moveCursorTo = document.getElementById(neededId);
+   let newCursor = document.createElement("div");
+   newCursor.className = 'cursor';
+   moveCursorTo.appendChild(newCursor);
+
+   currentPos = newPosition;
+
+   return true;
 }
 
 function moveBox(positionToMoveTo) {
