@@ -1,5 +1,3 @@
-// Possible refactoring
-   // Just change current to a list of numbers and convert it to a string when needed
 let currentPos = [2,2];
 let newPosition;
 const mazeContainer = document.getElementById('container');
@@ -24,8 +22,6 @@ function createMaze() {
       mazeContainer.appendChild(row);
       for (let j = 0; j < map[i].length; j++) {
 
-         // let madeId = String(i > 9 ? "" + i : "0" + i) + String(j > 9 ? "" + j : "0" + j)
-
          if (map[i][j] === 'W') {
             let cell = document.createElement("div");
             cell.className = 'wall mazeBlock';
@@ -34,12 +30,12 @@ function createMaze() {
          } else if (map[i][j] === ' ') {
             let cell = document.createElement("div");
             cell.className = 'mazeBlock';
-            cell.id = String(i)+String(j);
+            cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
          } else if (map[i][j] === 'S') {
             let cell = document.createElement("div");
             cell.className = 'start mazeBlock';
-            cell.id = madeId;
+            cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
 
             // Appending the starting cursor to the starting div
@@ -49,17 +45,17 @@ function createMaze() {
          } else if (map[i][j] === 'B') {
             let cell = document.createElement("div");
             cell.className = 'box mazeBlock';
-            cell.id = madeId;
+            cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
          } else if (map[i][j] === 'O') {
             let cell = document.createElement("div");
             cell.className = 'empty mazeBlock';
-            cell.id = madeId;
+            cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
          } else {
             let cell = document.createElement("div");
             cell.className = 'finish mazeBlock';
-            cell.id = madeId;
+            cell.id = String(i) + 'c' + String(j);
             row.appendChild(cell);
          }
       }
@@ -69,11 +65,14 @@ function createMaze() {
 function moveCursor() {
 
    // take class cursor away from current div
-   var toCancelClass = document.getElementById(currentPos);
+   let neededId = String(currentPos[0]) + 'c' + String(currentPos[1])
+
+   var toCancelClass = document.getElementById(neededId);
    toCancelClass.removeChild(toCancelClass.childNodes[0]);
 
    // move class cursor to new div
-   const moveCursorTo = document.getElementById(newPosition);
+   neededId = String(newPosition[0]) + 'c' + String(newPosition[1])
+   const moveCursorTo = document.getElementById(neededId);
    let newCursor = document.createElement("div");
    newCursor.className = 'cursor';
    moveCursorTo.appendChild(newCursor);
@@ -83,23 +82,26 @@ function moveCursor() {
    return true;
 }
 
-function moveBox(positionToMoveTo, boxIdToMove) {
+function moveBox(positionToMoveTo) {
    // Find out which direction the box needs to move to
+   // Find out if it can move
    // Grab the box item
    // Move it one div the appropriate way
    switch (positionToMoveTo) {
       case 'right':
+         console.log('right')
 
-         // Remove box class
-         var removeBox = document.getElementById(boxIdToMove);
-         removeBox.classList.remove('box');
+         let colToMoveBoxTo = newPosition[1] + 1
+         console.log(colToMoveBoxTo);
 
-         boxToMoveTo = Number(boxIdToMove) + 1;
-         if (String(boxToMoveTo).length < 4) boxToMoveTo = '0' + String(boxToMoveTo);
+         if (map[newPosition[0]][colToMoveBoxTo] === 'W' || map[newPosition[0]][colToMoveBoxTo] === 'B') {
+            alert('Preventing Move')
+            break;
+         } else {
+            console.log('Can Move');
+            moveCursor();
+         }
 
-         // Add box class
-         let newBox = document.getElementById(boxToMoveTo);
-         newBox.className = 'box';
    }
 }
 
@@ -113,7 +115,7 @@ function checkLeft() {
       case 'W':
          return false;
       case 'B':
-         moveBox();
+         moveBox('left');
          moveCursor();
       default:
          moveCursor();
@@ -121,20 +123,16 @@ function checkLeft() {
 }
 
 function checkRight() {
-   currentCol = Number(currentPos.substring(2, 4));
-   columnToMoveTo = currentCol + 1
+   columnToMoveTo = currentPos[1] + 1
+   newPosition = [currentPos[0], columnToMoveTo];
 
-   if (columnToMoveTo < 10) columnToMoveTo = "0" + columnToMoveTo;
-   newPosition = currentPos.substring(0, 2) + String(columnToMoveTo);
+   let itemInNextSpot = map[currentPos[0]][columnToMoveTo]
 
-   let leftRightOptions = map[Number(currentPos.substring(0, 2))][Number(columnToMoveTo)]
-
-   switch (leftRightOptions) {
+   switch (itemInNextSpot) {
       case 'W':
          return false;
       case 'B':
-         moveBox('right', newPosition)
-         moveCursor();
+         moveBox('right');
       default:
          moveCursor();
    }
@@ -142,34 +140,40 @@ function checkRight() {
 }
 
 function checkUp() {
-   currentRow = Number(currentPos.substring(0, 2));
-   rowToMoveTo = currentRow - 1;
 
-   if (rowToMoveTo < 10) rowToMoveTo = "0" + rowToMoveTo;
-   newPosition = String(rowToMoveTo) + currentPos.substring(2, 4);
+   rowToMoveTo = currentPos[0] - 1;
+   console.log('Row to move to ' + rowToMoveTo);
+   newPosition = [rowToMoveTo, currentPos[1]];
 
-   upDownOptions = map[Number(rowToMoveTo)][Number(currentPos.substring(2, 4))];
+   let itemInNextSpot = map[rowToMoveTo][currentPos[1]]
+   console.log('Items in next spot ' + itemInNextSpot)
 
-   switch (upDownOptions) {
+   switch (itemInNextSpot) {
       case 'W':
          return false;
+      case 'B':
+         moveBox();
+         moveCursor();
       default:
          moveCursor();
    }
+
 }
 
 function checkDown() {
-   currentRow = Number(currentPos.substring(0, 2));
-   rowToMoveTo = currentRow + 1;
+   rowToMoveTo = currentPos[0] + 1;
+   console.log('Row to move to ' + rowToMoveTo);
+   newPosition = [rowToMoveTo, currentPos[1]];
 
-   if (rowToMoveTo < 10) rowToMoveTo = "0" + rowToMoveTo;
-   newPosition = String(rowToMoveTo) + currentPos.substring(2, 4);
+   let itemInNextSpot = map[rowToMoveTo][currentPos[1]]
+   console.log('Items in next spot ' + itemInNextSpot)
 
-   upDownOptions = map[Number(rowToMoveTo)][Number(currentPos.substring(2, 4))];
-
-   switch (upDownOptions) {
+   switch (itemInNextSpot) {
       case 'W':
          return false;
+      case 'B':
+         moveBox();
+         moveCursor();
       default:
          moveCursor();
    }
