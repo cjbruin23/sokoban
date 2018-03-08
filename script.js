@@ -16,6 +16,7 @@ const map = [
 ]
 
 function createMaze() {
+   document.getElementById('container').innerHTML = ''
    for (let i = 0; i < map.length; i++) {
       let row = document.createElement('div');
       row.className = 'row';
@@ -59,24 +60,25 @@ function createMaze() {
    }
 }
 
-function moveCursor() {
-
-   // take class cursor away from current div
-   let neededId = String(currentPos[0]) + 'c' + String(currentPos[1])
-
-   var toCancelClass = document.getElementById(neededId);
-   toCancelClass.removeChild(toCancelClass.childNodes[0]);
-
-   // move class cursor to new div
-   neededId = String(newPosition[0]) + 'c' + String(newPosition[1])
-   const moveCursorTo = document.getElementById(neededId);
-   let newCursor = document.createElement("div");
-   newCursor.className = 'cursor';
-   moveCursorTo.appendChild(newCursor);
-
-   currentPos = newPosition;
-
-   return true;
+function moveCursor(whichWay) {
+   switch (whichWay) {
+      case 'up':
+         currentPos = [currentPos[0]-1, currentPos[1]]
+         createMaze();
+         break;
+      case 'left':
+         currentPos = [currentPos[0], currentPos[1] -1]
+         createMaze();
+         break;
+      case 'right':
+         currentPos = [currentPos[0], currentPos[1] +1]
+         createMaze();
+         break;
+      case 'down':
+         currentPos = [currentPos[0] + 1, currentPos[1]]
+         createMaze();
+         break;
+   }
 }
 
 function moveBox(positionToMoveTo) {
@@ -104,12 +106,13 @@ function moveBox(positionToMoveTo) {
             // Place that string back into map
             map[newPosition[0]] = newString;
 
-            document.getElementById('container').innerHTML = ''
-
+            currentPos = newPosition;
             createMaze();
-
          }
+         break;
 
+      case 'up':
+         console.log('up');
    }
 }
 
@@ -122,11 +125,13 @@ function checkLeft() {
    switch (itemInNextSpot) {
       case 'W':
          return false;
+         break;
       case 'B':
          moveBox('left');
-         moveCursor();
+         break;
       default:
-         moveCursor();
+         moveCursor('left');
+         break;
    }
 }
 
@@ -144,7 +149,7 @@ function checkRight() {
          moveBox('right');
          break;
       default:
-         moveCursor();
+         moveCursor('right');
    }
 
 }
@@ -161,11 +166,12 @@ function checkUp() {
    switch (itemInNextSpot) {
       case 'W':
          return false;
+         break;
       case 'B':
-         moveBox();
-         moveCursor();
+         moveBox('up');
+         break;
       default:
-         moveCursor();
+         moveCursor('up');
    }
 
 }
@@ -181,11 +187,12 @@ function checkDown() {
    switch (itemInNextSpot) {
       case 'W':
          return false;
+         break;
       case 'B':
          moveBox();
-         moveCursor();
+         break;
       default:
-         moveCursor();
+         moveCursor('down');
    }
 }
 
