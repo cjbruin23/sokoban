@@ -82,10 +82,7 @@ function moveCursor(whichWay) {
 }
 
 function moveBox(positionToMoveTo) {
-   // Find out which direction the box needs to move to
-   // Find out if it can move
-   // Grab the box item
-   // Move it one div the appropriate way
+   let rowToMoveBoxTo;
    switch (positionToMoveTo) {
       case 'right':
 
@@ -94,6 +91,8 @@ function moveBox(positionToMoveTo) {
          if (map[newPosition[0]][colToMoveBoxTo] === 'W' || map[newPosition[0]][colToMoveBoxTo] === 'B') {
             alert('Preventing Move')
             break;
+         } else if (map[newPosition[0]][colToMoveBoxTo] === 'O' ) {
+            console.log('Open!');
          } else {
 
             // Break proper row string into list
@@ -111,8 +110,89 @@ function moveBox(positionToMoveTo) {
          }
          break;
 
+         case 'left':
+
+            let leftColToMoveBoxTo = newPosition[1] - 1
+
+            if (map[newPosition[0]][leftColToMoveBoxTo] === 'W' || map[newPosition[0]][leftColToMoveBoxTo] === 'B') {
+               alert('Preventing Move')
+               break;
+            } else {
+
+               // Break proper row string into list
+               let rowArray = map[newPosition[0]].split("");
+               rowArray[newPosition[1]] = ' ';
+               rowArray[newPosition[1]-1] = 'B';
+
+               // Revert array back into String
+               let newString = rowArray.join("");
+               // Place that string back into map
+               map[newPosition[0]] = newString;
+
+               currentPos = newPosition;
+               createMaze();
+            }
+            break;
+
       case 'up':
-         console.log('up');
+         rowToMoveBoxTo = newPosition[0] - 1
+
+         if (map[rowToMoveBoxTo][newPosition[1]] === 'W' || map[rowToMoveBoxTo][newPosition[1]] === 'B') {
+            alert('Preventing Move');
+            break;
+         } else {
+
+            // Break proper row string into list; then will remove block
+            let rowArrayToEraseFrom = map[newPosition[0]].split("");
+            rowArrayToEraseFrom[newPosition[1]] = ' ';
+
+            // Break proper row string into list; then will place block into
+            let rowArrayToEnterInto = map[newPosition[0]-1].split("");
+            rowArrayToEnterInto[newPosition[1]] = 'B';
+
+            // Revert array back into String
+            let newString1 = rowArrayToEraseFrom.join("");
+            let newString2 = rowArrayToEnterInto.join("");
+
+            // Place that string back into map
+            map[newPosition[0]] = newString1;
+            map[newPosition[0]-1] = newString2;
+
+            currentPos = newPosition;
+
+            createMaze();
+         }
+         break;
+
+         case 'down':
+            rowToMoveBoxTo = newPosition[0] + 1
+
+            if (map[rowToMoveBoxTo][newPosition[1]] === 'W' || map[rowToMoveBoxTo][newPosition[1]] === 'B') {
+               alert('Preventing Move');
+               break;
+            } else {
+
+               // Break proper row string into list; then will remove block
+               let rowArrayToEraseFrom = map[newPosition[0]].split("");
+               rowArrayToEraseFrom[newPosition[1]] = ' ';
+
+               // Break proper row string into list; then will place block into
+               let rowArrayToEnterInto = map[newPosition[0]+1].split("");
+               rowArrayToEnterInto[newPosition[1]] = 'B';
+
+               // Revert array back into String
+               let newString1 = rowArrayToEraseFrom.join("");
+               let newString2 = rowArrayToEnterInto.join("");
+
+               // Place that string back into map
+               map[newPosition[0]] = newString1;
+               map[newPosition[0]+1] = newString2;
+
+               currentPos = newPosition;
+
+               createMaze();
+            }
+            break;
    }
 }
 
@@ -140,7 +220,6 @@ function checkRight() {
    newPosition = [currentPos[0], columnToMoveTo];
 
    let itemInNextSpot = map[currentPos[0]][columnToMoveTo]
-   console.log(itemInNextSpot);
 
    switch (itemInNextSpot) {
       case 'W':
@@ -157,11 +236,9 @@ function checkRight() {
 function checkUp() {
 
    rowToMoveTo = currentPos[0] - 1;
-   console.log('Row to move to ' + rowToMoveTo);
    newPosition = [rowToMoveTo, currentPos[1]];
 
    let itemInNextSpot = map[rowToMoveTo][currentPos[1]]
-   console.log('Items in next spot ' + itemInNextSpot)
 
    switch (itemInNextSpot) {
       case 'W':
@@ -178,18 +255,16 @@ function checkUp() {
 
 function checkDown() {
    rowToMoveTo = currentPos[0] + 1;
-   console.log('Row to move to ' + rowToMoveTo);
    newPosition = [rowToMoveTo, currentPos[1]];
 
    let itemInNextSpot = map[rowToMoveTo][currentPos[1]]
-   console.log('Items in next spot ' + itemInNextSpot)
 
    switch (itemInNextSpot) {
       case 'W':
          return false;
          break;
       case 'B':
-         moveBox();
+         moveBox('down');
          break;
       default:
          moveCursor('down');
